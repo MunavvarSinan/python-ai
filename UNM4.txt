@@ -1,22 +1,17 @@
-                                                                                       Module 4     UNIX PROGRAMMING
-
-
-                                             Chapter 1: Process Control
-
-   Changing User IDs and Group IDs
-   Interpreter Files
-   System Function
-   Process Accounting
-   User Identification
-   Process Times
-   I/O Redirection
+Changing User IDs and Group IDs
+Interpreter Files
+System Function
+Process Accounting
+   User Identification
+   Process Times
+   I/O Redirection
 
 
 CHANGING USER IDs AND GROUP IDs
-    When our programs need additional privileges or need to gain access to resources that they currently
+    When our programs need additional privileges or need to gain access to resources that they currently
       aren't allowed to access, they need to change their user or group ID to an ID that has the appropriate
       privilege or access.
-    Similarly, when our programs need to lower their privileges or prevent access to certain resources, they
+    Similarly, when our programs need to lower their privileges or prevent access to certain resources, they
       do so by changing either their user ID or group ID to an ID without the privilege or ability access to the
       resource.
            #include <unistd.h>
@@ -35,26 +30,25 @@ the user ID also applies to the group ID.)
         changed. If neither of these two conditions is true, errnois set to EPERM, and 1 is returned.
 
 We can make a few statements about the three user IDs that the kernel maintains.
-    Only a superuser process can change the real user ID. Normally, the real user ID is set by the login(1)
+    Only a superuser process can change the real user ID. Normally, the real user ID is set by the login(1)
        program when we log in and never changes. Because login is a superuser process, it sets all three user IDs
        when it calls setuid.
-    The effective user ID is set by the exec functions only if the set-user-ID bit is set for the program file. If the
+    The effective user ID is set by the exec functions only if the set-user-ID bit is set for the program file. If the
        set-user-ID bit is not set, the exec functions leave the effective user ID as its current value. We can call
        setuid at any time to set the effective user ID to either the real user ID or the saved set-user-ID. Naturally,
        we can't set the effective user ID to any random value.
-    The saved set-user-ID is copied from the effective user ID by exec. If the file's set-user-ID bit is set, this
+    The saved set-user-ID is copied from the effective user ID by exec. If the file's set-user-ID bit is set, this
        copy is saved after execstores the effective user ID from the file's user ID.
 
 
 
 
-     1     BrCE, Bengaluru
-                                                                                      Module 4     UNIX PROGRAMMING
-
+    
+  
 
 setreuidand setregidFunctions
 
-     Swapping of the real user ID and the effective user ID with the setreuid function.
+     Swapping of the real user ID and the effective user ID with the setreuid function.
 
  #include <unistd.h>
 
@@ -63,15 +57,15 @@ setreuidand setregidFunctions
  int setregid(gid_t rgid, gid_t egid);
 
 Both return : 0 if OK, -1 on error
-    We can supply a value of 1 for any of the arguments to indicate that the corresponding ID should remain
+    We can supply a value of 1 for any of the arguments to indicate that the corresponding ID should remain
         unchanged.
-    The rule is simple: an unprivileged user can always swap between the real user ID and the effective user
+    The rule is simple: an unprivileged user can always swap between the real user ID and the effective user
         ID.
-    This allows a set-user-ID program to swap to the user’s normal permissions and swap back again later for
+    This allows a set-user-ID program to swap to the user’s normal permissions and swap back again later for
         set-user- ID operations.
 
 seteuid and setegid functions :
-     POSIX.1 includes the two functions seteuid and setegid. These functions are similar to setuid and setgid,
+     POSIX.1 includes the two functions seteuid and setegid. These functions are similar to setuid and setgid,
       but only the effective user ID or effective group ID is changed.
 #include     <unistd.h>
 
@@ -79,8 +73,8 @@ int seteuid(uid_t uid);
 
 int setegid(gid_t gid);
 Both return : 0 if OK, 1 on error
-    An unprivileged user can set its effective user ID to either its real user ID or its saved set-user-ID.
-    For a privileged user, only the effective user ID is set to uid. (This differs from the setuid function, which
+    An unprivileged user can set its effective user ID to either its real user ID or its saved set-user-ID.
+    For a privileged user, only the effective user ID is set to uid. (This differs from the setuid function, which
         changes all three user IDs.)
 
 
@@ -89,24 +83,23 @@ Both return : 0 if OK, 1 on error
                         Figure: Summary of all the functions that set the various user Ids
 
 
-     2   BrCE, Bengaluru
-                                                                                       Module 4     UNIX PROGRAMMING
-
+    
+    
 
 INTERPRETER FILES
-    These files are text files that begin with a line of the form
+    These files are text files that begin with a line of the form
          #! pathname [ optional-argument ]
-    The space between the exclamation point and the pathname is optional. The most common of these
+    The space between the exclamation point and the pathname is optional. The most common of these
      interpreter files begin with the line
           #!/bin/sh
-    The pathname is normally an absolute pathname, since no special operations are performed on it (i.e.,
+    The pathname is normally an absolute pathname, since no special operations are performed on it (i.e.,
      PATH is not used).
-    The recognition of these files is done within the kernel as part of processing the exec system call.
-    The actual file that gets executed by the kernel is not the interpreter file, but the file specified by the
+    The recognition of these files is done within the kernel as part of processing the exec system call.
+    The actual file that gets executed by the kernel is not the interpreter file, but the file specified by the
      pathname on the first line of the interpreter file.
-    Be sure to differentiate between the interpreter filea text file that begins with #!and the interpreter,
+    Be sure to differentiate between the interpreter filea text file that begins with #!and the interpreter,
      which is specified by the pathname on the first line of the interpreter file.
-    Be aware that systems place a size limit on the first line of an interpreter file. This limit includes the #!, the
+    Be aware that systems place a size limit on the first line of an interpreter file. This limit includes the #!, the
      pathname, the optional argument, the terminating newline, and any spaces.
 
 A program that execs an interpreter file
@@ -148,12 +141,11 @@ system FUNCTION
 
 
 
-     3    BrCE, Bengaluru
-                                                                                    Module 4     UNIX PROGRAMMING
+    
 
-    If cmdstring is a null pointer, system returns nonzero only if a command processor is available. This
+    If cmdstring is a null pointer, system returns nonzero only if a command processor is available. This
        feature determines whether the system function is supported on a given operating system.
-    Under the UNIX System, system is always available.
+    Under the UNIX System, system is always available.
 Because system is implemented by calling fork, exec, and waitpid, there are three types of return values.
 
     1. If either the forkfails or waitpid returns an error other than EINTR, systemreturns 1 with errnoset to
@@ -207,9 +199,7 @@ int main(void)
     if ((status = system("nosuchcommand")) < 0)
         err_sys("system() error");
 
-     4   BrCE, Bengaluru
-                                                                                  Module 4     UNIX PROGRAMMING
-
+    
     pr_exit(status);
 
     if ((status = system("who; exit 44")) < 0)
@@ -245,26 +235,23 @@ printf("real uid = %d, effective uid = %d\n", getuid(), geteuid());
 exit(0);
 }
 PROCESS ACCOUNTING
-     Most UNIX systems provide an option to do process accounting. When enabled, the kernel writes an
+     Most UNIX systems provide an option to do process accounting. When enabled, the kernel writes an
       accounting record each time a process terminates.
-     These accounting records are typically a small amount of binary data with the name of the command, the
+     These accounting records are typically a small amount of binary data with the name of the command, the
       amount of CPU time used, the user ID and group ID, the starting time, and so on.
-     A superuser executes accton with a pathname argument to enable accounting.
-     The accounting records are written to the specified file, which is usually /var/account/acct. Accounting is
+     A superuser executes accton with a pathname argument to enable accounting.
+     The accounting records are written to the specified file, which is usually /var/account/acct. Accounting is
       turned off by executing accton without any arguments.
-     The data required for the accounting record, such as CPU times and number of characters transferred, is
+     The data required for the accounting record, such as CPU times and number of characters transferred, is
       kept by the kernel in the process table and initialized whenever a new process is created, as in the child
       after a fork.
-     Each accounting record is written when the process terminates.
-     This means that the order of the records in the accounting file corresponds to the termination order of
+     Each accounting record is written when the process terminates.
+     This means that the order of the records in the accounting file corresponds to the termination order of
       the processes, not the order in which they were started.
-     The accounting records correspond to processes, not programs.
-     A new record is initialized by the kernel for the child after a fork, not when a new program is
+     The accounting records correspond to processes, not programs.
+     A new record is initialized by the kernel for the child after a fork, not when a new program is
       executed. The structure of the accounting records is defined in the header <sys/acct.h> and looks
 
-
-     5   BrCE, Bengaluru
-                                                                                   Module 4   UNIX PROGRAMMING
 
 
          something like
@@ -309,34 +296,31 @@ struct    acct
 
 
 
-     6    BrCE, Bengaluru
-                                                                                            Module 4   UNIX PROGRAMMING
-
 
 USER IDENTIFICATION
 
-    Any process can find out its real and effective user ID and group ID.
-    Sometimes, however, we want to find out the login name of the user who's running the program.
-    We could call getpwuid(getuid()), but what if a single user has multiple login names, each with the same
+    Any process can find out its real and effective user ID and group ID.
+    Sometimes, however, we want to find out the login name of the user who's running the program.
+    We could call getpwuid(getuid()), but what if a single user has multiple login names, each with the same
      user ID? (A person might have multiple entries in the password file with the same user ID to have a
      different login shell for each entry).
-    The system normally keeps track of the name we log in and the getlogin function provides a way to fetch
+    The system normally keeps track of the name we log in and the getlogin function provides a way to fetch
      that login name.
           #include <unistd.h>
           char *getlogin(void);
          Returns : pointer to string giving login name if OK, NULL on error
 
-    This function can fail if the process is not attached to a terminal that a user logged in to.
+    This function can fail if the process is not attached to a terminal that a user logged in to.
 
 PROCESS TIMES
 
-    We describe three times that we can measure: wall clock time, user CPU time, and system CPU time. Any
+    We describe three times that we can measure: wall clock time, user CPU time, and system CPU time. Any
      process can call the times function to obtain these values for itself and any terminated children.
      #include<sys/times.h>
      Clock_t times(struct tms * buf)
          Returns: elapsed wall clock time in clock ticks if OK, 1 on error
 
-    This function fills in the tms structure pointed to by buf:
+    This function fills in the tms structure pointed to by buf:
      struct tms
      {
      clock_t      tms_utime;         /* user CPU time */
@@ -345,27 +329,26 @@ PROCESS TIMES
      clock_t tms_cstime;                       /* system CPU time, terminated children */
      };
 
-    Note that the structure does not contain any measurement for the wall clock time.
-    Instead, the function returns the wall clock time as the value of the function, each time it's called.
-    This value is measured from some arbitrary point in the past, so we can't use its absolute value; instead,
+    Note that the structure does not contain any measurement for the wall clock time.
+    Instead, the function returns the wall clock time as the value of the function, each time it's called.
+    This value is measured from some arbitrary point in the past, so we can't use its absolute value; instead,
      we use its relative value.
 
 I/O Redirection
 
-    It scans the command line for the occurrence of the special redirection characters <,>,or >>
-    Unix provides the capability to change where standard input comes from or where ouput goes
+    It scans the command line for the occurrence of the special redirection characters <,>,or >>
+    Unix provides the capability to change where standard input comes from or where ouput goes
      using a concept called Input/Output(I/O) redirection.
-    I/O redirection is accomplished using a redirection operator which allows the user to specify the
+    I/O redirection is accomplished using a redirection operator which allows the user to specify the
      input or output data be directed to a file.
-    The output redirection operator is the >(greater than) symbol and general syntax:
+    The output redirection operator is the >(greater than) symbol and general syntax:
      command > output_file_spec
 
 
-     7    BrCE, Bengaluru
-                                                                                   Module 4     UNIX PROGRAMMING
+    
 
 
- Spaces around the redirection is not mandatory, but to add readability to the command.
+ Spaces around the redirection is not mandatory, but to add readability to the command.
 
    Eg: $ls > my_files [Enter]                                 $ echo “Hello World!” > my_files [Enter]
       $ cat my_files [Enter]                                  $ cat my_files [Enter]
@@ -375,7 +358,7 @@ I/O Redirection
            dino
        $
 
- The append operator is the >>
+ The append operator is the >>
   $ ls > my_files [Enter]
   $ echo “Hello World!” >> my_files [Enter]
   $ cat my_files [Enter]
@@ -385,38 +368,38 @@ I/O Redirection
           dino
           Hello World!
 
- The first output redirection creates the file if it does not exist or overwrites its content if it does and the
+ The first output redirection creates the file if it does not exist or overwrites its content if it does and the
   second redirection appends the string “Hello World!” to the end of the file.
- When using the append redirection operator, if the file does not exist, >> will cause its creation and
+ When using the append redirection operator, if the file does not exist, >> will cause its creation and
   append the output (to the empty file).
- The ability also exists to redirect the standard input using the input redirection operator, the < (less than)
+ The ability also exists to redirect the standard input using the input redirection operator, the < (less than)
   symbol
- The general syntax of input redirection:
+ The general syntax of input redirection:
   command < input_file_spec
 
 
 
 
- 8    BrCE, Bengaluru
-                                                                    MODULE 4 UNIX Programming
+
+                                                                 
 
                                      Chapter 2 : INTERPROCESS COMMUNICATION
 
 Overview of IPC Methods
-    Pipes
-    Popen and pclose Functions
-    Coprocesses
-    FIFOs
-    System V IPC
-    Message Queues
-    Semaphores
+    Pipes
+    Popen and pclose Functions
+    Coprocesses
+    FIFOs
+    System V IPC
+    Message Queues
+    Semaphores
 
 
   INTRODUCTION
-   IPC enables one application to control another application, and for several applications to share the same
+   IPC enables one application to control another application, and for several applications to share the same
       data without interfering with one another. IPC is required in all multiprocessing systems, but it is not
       generally supported by single-process operating systems.
-   The various forms of IPC that are supported on a UNIX system are as follows :
+   The various forms of IPC that are supported on a UNIX system are as follows :
   1) Half duplex Pipes
   2) FIFO’s
   3) Full duplex Pipes
@@ -427,41 +410,41 @@ Overview of IPC Methods
   8) Sockets
   9) STREAMS
 
-   The first seven forms of IPC are usually restricted to IPC between processes on the same host.
-   The final two i.e. Sockets and STREAMS are the only two that are generally supported for IPC between
+   The first seven forms of IPC are usually restricted to IPC between processes on the same host.
+   The final two i.e. Sockets and STREAMS are the only two that are generally supported for IPC between
     processes on different hosts.
 
      PIPES
 
-         Pipes are the oldest form of UNIX System IPC. Pipes have two limitations.
-         Historically, they have been half duplex (i.e., data flows in only one direction).
-         Pipes can be used only between processes that have a common ancestor.
-         Normally, a pipe is created by a process, that process calls fork, and the pipe is used between the parent
+         Pipes are the oldest form of UNIX System IPC. Pipes have two limitations.
+         Historically, they have been half duplex (i.e., data flows in only one direction).
+         Pipes can be used only between processes that have a common ancestor.
+         Normally, a pipe is created by a process, that process calls fork, and the pipe is used between the parent
           and the child.
-         A pipe is created by calling the pipefunction.
+         A pipe is created by calling the pipefunction.
 
              #include <unistd.h>
              int pipe(int filedes[2]);
                                             Returns: 0 if OK, 1 on error.
 
-         Two file descriptors are returned through the filedes argument: filedes[0] is open for reading, and
+         Two file descriptors are returned through the filedes argument: filedes[0] is open for reading, and
           filedes[1] is open for writing.
-         The output of filedes[1] is the input for filedes[0].
+         The output of filedes[1] is the input for filedes[0].
 
 
- 1     BrCE, Bengaluru
-                                                                 MODULE 4 UNIX Programming
 
-      Two ways to picture a half-duplex pipe are shown in Figure 1.
-      The left half of the figure shows the two ends of the pipe connected in a single process. The right half of
+                                                              
+
+      Two ways to picture a half-duplex pipe are shown in Figure 1.
+      The left half of the figure shows the two ends of the pipe connected in a single process. The right half of
        the figure emphasizes that the data in the pipe flows through the kernel.
 
 
 
 
                                 Figure 1. Two ways to view a half-duplex pipe
-      A pipe in a single process is next to useless.
-      Normally, the process that calls pipe then calls fork, creating an IPC channel from the parent to the child or
+      A pipe in a single process is next to useless.
+      Normally, the process that calls pipe then calls fork, creating an IPC channel from the parent to the child or
        vice versa. Figure 2 shows this scenario.
 
 
@@ -470,18 +453,17 @@ Overview of IPC Methods
                                       Figure 2 Half-duplex pipe after a fork
 
 
-      What happens after the fork depends on which direction of data flow we want.
-      For a pipe from the parent to the child, the parent closes the read end of the pipe (fd[0]), and the child
+      What happens after the fork depends on which direction of data flow we want.
+      For a pipe from the parent to the child, the parent closes the read end of the pipe (fd[0]), and the child
        closes the write end (fd[1]). Figure 3 shows the resulting arrangement of descriptors.
                                         Figure 3 Pipe from parent to child
 
 
 
 
-2   BrCE, Bengaluru
-                                                                      MODULE 4 UNIX Programming
+                                                                   
 
-          For a pipe from the child to the parent, the parent closes fd[1], and the child closes fd[0]. When one end of
+          For a pipe from the child to the parent, the parent closes fd[1], and the child closes fd[0]. When one end of
              a pipe is closed, the following two rules apply.
               If we read from a pipe whose write end has been closed, read returns 0 to indicate an end of file
                after all the data has been read.
@@ -519,9 +501,9 @@ Overview of IPC Methods
 
     popen AND pcloseFUNCTIONS
 
-          Since a common operation is to create a pipe to another process, to either read its output or send it
+          Since a common operation is to create a pipe to another process, to either read its output or send it
            input, the standard I/O library has historically provided the popen and pclose functions.
-          These two functions handle all the dirty work that we've been doing ourselves: creating a pipe, forking a
+          These two functions handle all the dirty work that we've been doing ourselves: creating a pipe, forking a
            child, closing the unused ends of the pipe, executing a shell to run the command, and waiting for the
            command to terminate.
                   #include <stdio.h>
@@ -533,15 +515,14 @@ Overview of IPC Methods
 
 
 
-3       BrCE, Bengaluru
-                                                                   MODULE 4 UNIX Programming
+                                                                
 
           int pclose(FILE *fp);
 
                                    Returns: termination status of cmdstring, or 1 on error
 
 
-        The function popen does a fork and exec to execute the cmdstring, and returns a standard I/O
+        The function popen does a fork and exec to execute the cmdstring, and returns a standard I/O
          file pointer.
            If type is "r", the file pointer is connected to the standard output of cmdstring
                                        Figure 4 Result of fp = popen(cmdstring, "r")
@@ -558,13 +539,13 @@ Overview of IPC Methods
 
     COPROCESSES
 
-        A UNIX system filter is a program that reads from standard input and writes to standard output.
-        Filters are normally connected linearly in shell pipelines.
-        A filter becomes a coprocess when the same program generates the filter's input and reads the filter's
+        A UNIX system filter is a program that reads from standard input and writes to standard output.
+        Filters are normally connected linearly in shell pipelines.
+        A filter becomes a coprocess when the same program generates the filter's input and reads the filter's
          output.
-        A coprocess normally runs in the background from a shell, and its standard input and standard output
+        A coprocess normally runs in the background from a shell, and its standard input and standard output
          are connected to another program using a pipe.
-        The process creates two pipes: one is the standard input of the coprocess, and the other is the standard
+        The process creates two pipes: one is the standard input of the coprocess, and the other is the standard
          output of the coprocess. Figure 6 shows this arrangement.
             Figure 6. Driving a coprocess by writing its standard input and reading its standard output
 
@@ -581,8 +562,7 @@ Overview of IPC Methods
 
 
 
-4     BrCE, Bengaluru
-                                                                  MODULE 4 UNIX Programming
+                                                               
 
           while ((n = read(STDIN_FILENO, line, MAXLINE)) > 0)
           {    line[n] = 0;       /* null terminate */
@@ -602,7 +582,7 @@ Overview of IPC Methods
 
 
     FIFOs
-          FIFOs are sometimes called named pipes. Pipes can be used only between related processes when a
+          FIFOs are sometimes called named pipes. Pipes can be used only between related processes when a
            common ancestor has created the pipe.
 
              #include <sys/stat.h>
@@ -618,26 +598,25 @@ Overview of IPC Methods
            returns 1 with errno set to ENXIO if no process has the FIFO open for reading.
 
     There are two uses for FIFOs.
-        FIFOs are used by shell commands to pass data from one shell pipeline to another without creating
+        FIFOs are used by shell commands to pass data from one shell pipeline to another without creating
            intermediate temporary files.
-        FIFOs are used as rendezvous points in client-server applications to pass data between the clients and
+        FIFOs are used as rendezvous points in client-server applications to pass data between the clients and
            the servers.
 
     Example Using FIFOs to Duplicate Output Streams
 
-          FIFOs can be used to duplicate an output stream in a series of shell commands.
-          This prevents writing the data to an intermediate disk file. Consider a procedure that needs to
+          FIFOs can be used to duplicate an output stream in a series of shell commands.
+          This prevents writing the data to an intermediate disk file. Consider a procedure that needs to
            process a filtered input stream twice. Figure shows this arrangement.
 
 
 
 
-5       BrCE, Bengaluru
-                                                                    MODULE 4 UNIX Programming
+                                                                 
 
                            FIGURE : Procedure that processes a filtered input stream twice
 
-        With a FIFO and the UNIX program tee(1), we can accomplish this procedure without using a
+        With a FIFO and the UNIX program tee(1), we can accomplish this procedure without using a
          temporary file. (The tee program copies its standard input to both its standard output and to the file
          named on its command line.)
 
@@ -649,7 +628,7 @@ Overview of IPC Methods
 
 
 
-        We create the FIFO and then start prog3 in the background, reading from the FIFO. We then start
+        We create the FIFO and then start prog3 in the background, reading from the FIFO. We then start
          prog1 and use tee to send its input to both the FIFO and prog2. Figure shows the process
          arrangement.
 
@@ -678,8 +657,7 @@ Overview of IPC Methods
 
 
 
-6    BrCE, Bengaluru
-                                                                    MODULE 4 UNIX Programming
+                                                                 
 
 
 
@@ -703,12 +681,11 @@ Overview of IPC Methods
     system data type key_t, which is often defined as a long integer in the header <sys/types.h>. This key is
     converted into an identifier by the kernel.
     There are various ways for a client and a server to rendezvous at the same IPC structure.
-         The server can create a new IPC structure by specifying a key of IPC_PRIVATE and store the returned
+         The server can create a new IPC structure by specifying a key of IPC_PRIVATE and store the returned
 
 
 
-7     BrCE, Bengaluru
-                                                                   MODULE 4 UNIX Programming
+                                                                
 
          identifier somewhere (such as a file) for the client to obtain. The key IPC_PRIVATE guarantees that the
          server creates a new IPC structure. The disadvantage to this technique is that file system operations are
@@ -718,12 +695,12 @@ Overview of IPC Methods
          specifying IPC_PRIVATE, and the resulting identifier is then available to the child after the fork. The child
          can pass the identifier to a new program as an argument to one of the execfunctions.
 
-      The client and the server can agree on a key by defining the key in a common header, for example. The
+      The client and the server can agree on a key by defining the key in a common header, for example. The
        server then creates a new IPC structure specifying this key. The problem with this approach is that it's
        possible for the key to already be associated with an IPC structure, in which case the get function
        (msgget, semget, or shmget) returns an error. The server must handle this error, deleting the existing
        IPC structure, and try to create it again.
-      The client and the server can agree on a pathname and project ID (the project ID is a character value
+      The client and the server can agree on a pathname and project ID (the project ID is a character value
        between 0 and 255) and call the function ftok to convert these two values into a key. This key is then
        used in step 2. The only service provided by ftok is a way of generating a key from a pathname and
        project ID.
@@ -733,17 +710,17 @@ Overview of IPC Methods
                                                          Returns: key if OK, (key_t)-1 on error
 
 
-      The path argument must refer to an existing file. Only the lower 8 bits of id are used when generating the
+      The path argument must refer to an existing file. Only the lower 8 bits of id are used when generating the
        key.
-      The key created by ftok is usually formed by taking parts of the st_dev and st_ino fields in the stat
+      The key created by ftok is usually formed by taking parts of the st_dev and st_ino fields in the stat
        structure corresponding to the given pathname and combining them with the project ID.
-      If two pathnames refer to two different files, then ftok usually returns two different keys for the two
+      If two pathnames refer to two different files, then ftok usually returns two different keys for the two
        pathnames. However, because both i-node numbers and keys are often stored in long integers, there
        can be information loss creating a key. This means that two different pathnames to different files can
        generate the same key if the same project ID is used.
 
       Permission Structure
-      XSI IPC associates an ipc_perm structure with each IPC structure. This structure defines the permissions
+      XSI IPC associates an ipc_perm structure with each IPC structure. This structure defines the permissions
        and owner and includes at least the following members:
          struct ipc_perm
          {
@@ -755,13 +732,12 @@ Overview of IPC Methods
               .
               .
                 };
-      All the fields are initialized when the IPC structure is created. At a later time, we can modify the uid, gid,
+      All the fields are initialized when the IPC structure is created. At a later time, we can modify the uid, gid,
        and mode fields by calling msgctl, semctl, or shmctl. To change these values, the calling process must be
 
 
 
-8   BrCE, Bengaluru
-                                                                   MODULE 4 UNIX Programming
+                                                                
 
            either the creator of the IPC structure or the superuser. Changing these fields is similar to calling chown
            or chmod for a file.
@@ -775,7 +751,7 @@ Overview of IPC Methods
                                                      XSI IPC permissions
 
         Advantages and Disadvantages
-        A fundamental problem with XSI IPC( System V IPC ) is that the IPC structures are system wide and do
+        A fundamental problem with XSI IPC( System V IPC ) is that the IPC structures are system wide and do
          not have a reference count. For example, if we create a message queue, place some messages on the
          queue, and then terminate, the message queue and its contents are not deleted. They remain in the
          system until specifically read or deleted by some process calling msgrcv or msgctl, by someone
@@ -783,34 +759,33 @@ Overview of IPC Methods
          completely removed when the last process to reference it terminates. With a FIFO, although the name
          stays in the file system until explicitly removed, any data left in a FIFO is removed when the last process
          to reference the FIFO terminates.
-        Another problem with XSI IPC ( System V IPC ) is that these IPC structures are not known by names in
+        Another problem with XSI IPC ( System V IPC ) is that these IPC structures are not known by names in
          the file system. We can't access them and modify their properties with the functions. Almost a dozen
          new system calls (msgget, semop, shmat, and so on) were added to the kernel to support these IPC
          objects. We can't see the IPC objects with an ls command, we can't remove them with the rm
          command, and we can't change their permissions with the chmod command. Instead, two new
          commands ipcs(1) and ipcrm(1)were added.
-        Since these forms of IPC don't use file descriptors, we can't use the multiplexed I/O functions ( select
+        Since these forms of IPC don't use file descriptors, we can't use the multiplexed I/O functions ( select
          and poll) with them. This makes it harder to use more than one of these IPC structures at a time or to
          use any of these IPC structures with file or device I/O. For example, we can't have a server wait for a
          message to be placed on one of two message queues without some form of busy wait loop.
 
 
     MESSAGE QUEUES
-        A message queue is a linked list of messages stored within the kernel and identified by a message queue
+        A message queue is a linked list of messages stored within the kernel and identified by a message queue
          identifier. We'll call the message queue just a queue and its identifier a queue ID.
-        A new queue is created or an existing queue opened by msgget.
-        New messages are added to the end of a queue by msgsnd.
-        Every message has a positive long integer type field, a non-negative length, and the actual data bytes
+        A new queue is created or an existing queue opened by msgget.
+        New messages are added to the end of a queue by msgsnd.
+        Every message has a positive long integer type field, a non-negative length, and the actual data bytes
          (corresponding to the length), all of which are specified to msgsnd when the message is added to a
          queue.
-        Messages are fetched from a queue by msgrcv. We don't have to fetch the messages in a first-in, first-
+        Messages are fetched from a queue by msgrcv. We don't have to fetch the messages in a first-in, first-
          out order. Instead, we can fetch messages based on their type field.
     Each queue has the following msqid_dsstructure associated with it:
 
 
 
-9     BrCE, Bengaluru
-                                                                  MODULE 4 UNIX Programming
+                                                               
 
 struct msqid_ds
 {
@@ -830,22 +805,22 @@ struct msqid_ds
 This structure defines the current status of the queue.
 
 msgget
-      The first function normally called is msgget to either open an existing queue or create a new queue.
+      The first function normally called is msgget to either open an existing queue or create a new queue.
 
              #include <sys/msg.h>
              int msgget(key_t key, int flag);
                                                                         Returns: message queue ID if OK, 1 on error
 
      When a new queue is created, the following members of the msqid_ds structure are initialized.
-         The ipc_perm structure is initialized. The mode member of this structure is set to the corresponding
+         The ipc_perm structure is initialized. The mode member of this structure is set to the corresponding
           permission bits of flag.
-         msg_qnum, msg_lspid, msg_lrpid, msg_stime, and msg_rtime are all set to 0.
-         msg_ctime is set to the current time.
-         msg_qbytes is set to the system limit.
+         msg_qnum, msg_lspid, msg_lrpid, msg_stime, and msg_rtime are all set to 0.
+         msg_ctime is set to the current time.
+         msg_qbytes is set to the system limit.
      On success, msgget returns the non-negative queue ID. This value is then used with the other three
      message queue functions.
  Msgctl
-      The msgctl function performs various operations on a queue.
+      The msgctl function performs various operations on a queue.
         #include <sys/msg.h>
         int msgctl(int msqid, int cmd, struct msqid_ds *buf );
                                                                                         Returns: 0 if OK, -1 on error
@@ -855,19 +830,18 @@ msgget
 
 
 
-10     BrCE, Bengaluru
-                                                                     MODULE 4 UNIX Programming
+                                                                  
 
 Msgsnd
-      Data is placed onto a message queue by calling msgsnd.
+      Data is placed onto a message queue by calling msgsnd.
 
           #include <sys/msg.h>
           int msgsnd(int msqid, const void *ptr, size_t nbytes, int flag);
 
                                                                          Returns: 0 if OK, -1 on error
-      Each message is composed of a positive long integer type field, a non-negative length (nbytes), and the
+      Each message is composed of a positive long integer type field, a non-negative length (nbytes), and the
        actual data bytes (corresponding to the length). Messages are always placed at the end of the queue.
-      The ptr argument points to a long integer that contains the positive integer message type, and it is
+      The ptr argument points to a long integer that contains the positive integer message type, and it is
        immediately followed by the message data. (There is no message data if nbytes is 0.) If the largest message
        we send is 512 bytes, we can define the following structure:
          struct mymesg
@@ -876,12 +850,12 @@ Msgsnd
            char mtext[512]; /* message data, of length nbytes */
          };
 
-      The ptr argument is then a pointer to a mymesg structure. The message type can be used by the receiver to
+      The ptr argument is then a pointer to a mymesg structure. The message type can be used by the receiver to
        fetch messages in an order other than first in, first out.
 
 
 msgrcv
-        Messages are retrieved from a queue by msgrcv
+        Messages are retrieved from a queue by msgrcv
 
           #include <sys/msg.h>
           ssize_t msgrcv(int msqid, void *ptr, size_t nbytes, long type, int flag);
@@ -903,8 +877,7 @@ msgrcv
 
 
 
-11     BrCE, Bengaluru
-                                                                    MODULE 4 UNIX Programming
+                                                                 
 
            decrements the semaphore value by 1, indicating that it has used one unit of the resource.
         3. Otherwise, if the value of the semaphore is 0, the process goes to sleep until the semaphore value is
@@ -952,8 +925,7 @@ msgrcv
 
 
 
-12     BrCE, Bengaluru
-                                                                   MODULE 4 UNIX Programming
+                                                                
 
      semget
      The first function to call is semget to obtain a semaphore ID.
@@ -964,27 +936,27 @@ msgrcv
 
          When a new set is created, the following members of the semid_ds structure are initialized.
 
-      The ipc_perm structure is initialized. The mode member of this structure is set to the corresponding
+      The ipc_perm structure is initialized. The mode member of this structure is set to the corresponding
        permission bits of flag.
 
-      sem_otime is set to 0.
+      sem_otime is set to 0.
 
-      sem_ctime is set to the current time.
+      sem_ctime is set to the current time.
 
-      sem_nsems is set to nsems.
+      sem_nsems is set to nsems.
 
-      The number of semaphores in the set is nsems. If a new set is being created (typically in the server), we must
+      The number of semaphores in the set is nsems. If a new set is being created (typically in the server), we must
        specify nsems. If we are referencing an existing set (a client), we can specify nsems as 0.
 
          Semctl
 
-      The semctl function is the catchall for various semaphore operations.
+      The semctl function is the catchall for various semaphore operations.
 
                #include <sys/sem.h>
 
                int semctl(int semid, int semnum, int cmd,... /* union semun arg */);
 
-      The fourth argument is optional, depending on the command requested, and if present, is of type semun, a
+      The fourth argument is optional, depending on the command requested, and if present, is of type semun, a
        union of various command-specific arguments:
 
           union semun
@@ -997,25 +969,21 @@ msgrcv
 
 
 
-13     BrCE, Bengaluru
-                                                                      MODULE 4 UNIX Programming
+                                                                   
 
-      The cmd argument specifies one of the above ten commands to be performed on the set specified by semid.
+      The cmd argument specifies one of the above ten commands to be performed on the set specified by semid.
 
 
 
 
 semop
-      The function semop atomically performs an array of operations on a semaphore set.
+      The function semop atomically performs an array of operations on a semaphore set.
 
              #include <sys/sem.h>
              int semop(int semid, struct sembuf semoparray[ ], size_t nops);
                                                                                  Returns: 0 if OK, -1 on error.
 
-
-
-
-      The semoparray argument is a pointer to an array of semaphore operations, represented by sembuf
+      The semoparray argument is a pointer to an array of semaphore operations, represented by sembuf
        structures:
             struct sembuf
             {
@@ -1024,8 +992,8 @@ semop
               short       sem_flg; /* IPC_NOWAIT, SEM_UNDO */
             };
 
-      The nops argument specifies the number of operations (elements) in the array.
-      The sem_op element operations are values specifying the amount by which the semaphore value is
+      The nops argument specifies the number of operations (elements) in the array.
+      The sem_op element operations are values specifying the amount by which the semaphore value is
        to be changed.
                If sem_op is an integer greater than zero, semop adds the value to the corresponding semaphore
                 element value and awakens all processes that are waiting for the element to increase.
@@ -1035,15 +1003,9 @@ semop
                 element value provided that the result would not be negative. If the operation would make the element
                 value negative, semop blocks the process on the event that the semaphore element value increases. If
 
-
-
-14    BrCE, Bengaluru
-                                                                  MODULE 4 UNIX Programming
-
           the resulting value is 0, semop wakes the processes waiting for 0.
 
 
 
 
-15   BrCE, Bengaluru
-
+
